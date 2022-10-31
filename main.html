@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h1>Freefall model</h1>
+
+<canvas id="plane" height="600" width="400" >Your browser does not support the canvas tag.</canvas>
+
+<form id="frm1" action="">
+  Height (m): <input type="text" name="height" value="400"><br>
+  Mass (kg): <input type="text" name="mass" value="50"><br>
+  Gravity (ms-2): <input id="gravity" type="text" name = "gravity" value="9.81"><br>
+  Surface area (m2): <input type="text" name = "Surface area" value="1"><br>
+  Drag coefficient: <input type="text" name = "drag_coef" value="1.15"><br>
+  Air density (kgm-3): <input id="air_resistance" type="text" name = "air_density" value="1.225"><br><br> 
+</form> 
+
+<p>Click confirm to enter the parameters. Click start to begin the experiment.</p>
+
+<button onclick="myFunction()">Confirm</button>
+
+<button onclick="start()" id="start">Start</button>
+
+<button onclick="reset()">Reset</button>
+
+<p id="demo"></p>
+<p id="tiempo"></p>
+<p id="velocity"></p>
+<p id="height"></p>
+
+<script>
+setInterval(frame_update,25)
+
+var ih = 400;
+var ig = 9.81;
+var h = 400;
+var m = 50;
+var g = 9.81;
+var density = 1.225;
+var drag = 1.15;
+var a = 1;
+var run = 0;
+var y = (600 - (h+90));
+
+var velocity = 0;
+var time = 0;
+  
+function myFunction() {
+  var x = document.getElementById("frm1");
+  const text = [];
+  var i;
+  for (i = 0; i < x.length ;i++) {
+    text[i] = x.elements[i].value;
+  }
+  h = text[0];
+  ih = h;
+  m = text[1];
+  g = text[2];
+  ig = g;
+  a = text[3];
+  drag = text[4];
+  density = text[5];
+  y = 600 - (90+Number(h));
+}
+
+function frame_update(){
+var c = document.getElementById("plane");
+  
+var ctx = c.getContext("2d");
+ctx.fillStyle = "#3366FF";
+ctx.fillRect(0, 0, 400, 600);
+  
+var ground = c.getContext("2d");
+ground.fillStyle = "#00FF00";
+ground.fillRect(0, 550, 400, 50);
+
+var obj = c.getContext("2d");
+obj.fillStyle = "#FF0000";
+obj.fillRect(180, y, 40, 40);
+
+if (run == 1){
+  var iv = velocity;
+  if (g > 1){
+    g = ((ig*m) - (0.5*density*(velocity**2)*drag*a))/m;
+  }
+  else{
+    g = 0;
+  }
+  velocity = iv + g*0.025;
+  h = h - (velocity*0.025);
+  
+  time = time + 0.025;
+  y = (600 - (h+90));
+
+  if (y >= 510){
+    run = 0;
+    h = 0;
+  }
+  document.getElementById("tiempo").innerHTML = "Time: " + time.toPrecision(6) + " s";
+document.getElementById("velocity").innerHTML = "Velocity: " + velocity.toPrecision(6)+ " ms-1";
+document.getElementById("height").innerHTML = "Height: " + h.toPrecision(6)+ " m";
+  
+}
+}
+
+function start(){
+  if (run == 0){
+    run = 1;
+    document.getElementById("start").innerHTML = "Stop";
+  }
+  else{
+    run = 0;
+    document.getElementById("start").innerHTML = "Start";
+  }
+}
+
+function reset(){
+  run = 0;
+  h = ih;
+  g = ig;
+  y = 600 - (h + 90);
+  velocity = 0;
+  time = 0;
+  document.getElementById("start").innerHTML = "Start";
+}
+
+</script>
+
+</body>
+
+</html>
